@@ -2,18 +2,11 @@ const Tour = require("../models/tourModel");
 
 // to create a tour
 async function createTour(req,res) {
-    const {name, rating, price} = req.body;
-
-    if (!name || !rating || !price) {
-        return res.status(400).json({
-            status : "fail",
-            msg : "please enter a required fields"
-        })
-    }
+    const {name, rating, price, duration, maxGroupSize, difficulty, description, imageCover, images, startDate} = req.body;
 
    try {
      const newTour = Tour.create({
-        name, rating, price
+        name, rating, price, duration, maxGroupSize, difficulty, description, imageCover, images, startDate
     });
 
     res.status(201).json({
@@ -22,8 +15,10 @@ async function createTour(req,res) {
     });
 
    } catch (error) {
+    console.log(error);
+    
     return res.status(500).json({ 
-        msg: "Internal server error", error : error
+        msg: "Internal server error", error : error.message
     });
    }
 
@@ -47,8 +42,7 @@ async function getAllTour(req, res) {
 // to get a single tour
 async function getTour(req, res) {
   try { 
-    const {id} = req.params
-    const tour = await Tour.findById(id);
+    const tour = await Tour.findById(req.params.id);
 
     if (!tour) {
       return res.status(404).json({ status: "fail", message: "Invalid ID" });
@@ -92,7 +86,7 @@ async function deleteTour(req, res) {
     }
 
     await tour.deleteOne();
-    return res.status(404).json({ status : "success", message: "tour deleted successfully" });
+    return res.status(200).json({ status : "success", message: "tour deleted successfully" });
 
    } catch (error) {
     console.log(error);
