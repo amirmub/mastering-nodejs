@@ -8,11 +8,14 @@ const tourSchema = new mongoose.Schema({
    },
   rating: {
     type: Number,
-    default: 3.5,
+    default: 3.5, 
   },
   price: {
     type: Number,
     required: [true, "Price must be included"],
+  },
+  discountPrice: {
+    type: Number,
   },
   duration: {
     type: Number,

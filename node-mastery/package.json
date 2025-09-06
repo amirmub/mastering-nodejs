@@ -1,4 +1,15 @@
 {
+  "name": "node-mastery",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "server": "nodemon app.js",
+    "debug": "ndb app.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
   "dependencies": {
     "dotenv": "^17.2.1",
     "express": "^5.1.0",

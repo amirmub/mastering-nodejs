@@ -2,11 +2,15 @@ const Tour = require("../models/tourModel");
 
 // to create a tour
 async function createTour(req,res) {
-    const {name, rating, price, duration, maxGroupSize, difficulty, description, imageCover, images, startDate} = req.body;
+    const {name, rating, price,discountPrice, duration, maxGroupSize, difficulty, description, imageCover, images, startDate} = req.body;
+
+    if (discountPrice > price) {
+      return res.status(400).json({status : "fail", msg : "the price must be greatethan discountPrice"})
+    }
 
    try {
      const newTour = Tour.create({
-        name, rating, price, duration, maxGroupSize, difficulty, description, imageCover, images, startDate
+        name, rating, price,discountPrice, duration, maxGroupSize, difficulty, description, imageCover, images, startDate
     });
 
     res.status(201).json({
