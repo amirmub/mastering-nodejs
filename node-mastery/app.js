@@ -9,10 +9,11 @@ const dbConnection = require("./config/config");
 dbConnection();
 
 // all routes
-const router = require("./routers/tourRouter");
-app.use(router)
+const routes = require("./routers/index.js");
+app.use(routes);
 
 app.listen(5000, (err) => {
   if (err) console.log(err);
   else console.log("its listening PORT http://localhost:5000");
 });
+
