@@ -7,6 +7,14 @@ async function createUser(req, res) {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    if(password !== passwordConfirm) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Password confirm do not match"
+      });
+    }
+
     const user = await User.create({ name, email, photo, password: hashedPassword, passwordConfirm: hashedPassword });
 
     res.status(201).json({
@@ -16,9 +24,10 @@ async function createUser(req, res) {
     
   } catch (error) {
     res.status(400).json({
-      status: "fail",
-      message: error.message
-    });
+    status: "fail",
+    message: `Duplicate entry for email: ${error.keyValue.email}`
+  });
+
   }
 }
 
