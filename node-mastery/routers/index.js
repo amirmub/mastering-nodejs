@@ -10,4 +10,7 @@ router.use(tourRouter);
 const userLogin = require('./userLoginRoute');
 router.use(userLogin);
 
+const passwordRoute = require('./passwordRoute');
+router.use(passwordRoute);
+
 module.exports = router;
