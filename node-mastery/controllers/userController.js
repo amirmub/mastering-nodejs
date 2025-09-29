@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 
 // to create a user
 async function createUser(req, res) {
-  const { name, email, photo, password, passwordConfirm } = req.body;
+  const { name, email, photo, password, passwordConfirm, role } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -15,7 +15,7 @@ async function createUser(req, res) {
       });
     }
 
-    const user = await User.create({ name, email, photo, password: hashedPassword, passwordConfirm: hashedPassword });
+    const user = await User.create({ name, email, role, photo, password: hashedPassword, passwordConfirm: hashedPassword });
 
     res.status(201).json({
       status: "success",

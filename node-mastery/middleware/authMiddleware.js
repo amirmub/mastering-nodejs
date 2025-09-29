@@ -11,12 +11,24 @@ function tokenVerify(req, res, next) {
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(401).json({ msg: "Token is invalid or expired" });
+      return res.status(401).json({ msg: "Token is invalid or expired! Please Login again" });
     }
 
-    req.email = decoded.email; // Attach role to request
+    req.email = decoded.email; // Attach email to request on the body
+    req.role = decoded.role; // Attach role to request on the body
     next();
   });
 }
 
-module.exports = { tokenVerify } 
+// Middleware to check if the user is an admin 
+function isAdmin(req, res, next) {
+  const role = req.role;  
+
+  if (role === 'admin') {
+    next();
+  } else {
+    return res.status(403).json({ msg: "Access denied: only for admin" });
+  }
+}
+
+module.exports = { tokenVerify, isAdmin };
