@@ -5,7 +5,7 @@ const userController = require("../controllers/userController");
 const authMiddleware = require("../middleware/authMiddleware");
 
 // routes to create user
-router.post("/api/v1/users",authMiddleware.tokenVerify,userController.createUser);
+router.post("/api/v1/users",userController.createUser);
 
 // routes to get all users
 router.get("/api/v1/users",[authMiddleware.tokenVerify, authMiddleware.isAdmin],userController.getAllUsers);

@@ -1,3 +1,4 @@
+// below all this code write on the user controller.js file. this one is for education purpose only
 const User = require("../models/userModel");
 const crypto = require("crypto");
 const sendEmail = require("../utils/email");
@@ -107,4 +108,42 @@ async function resetPassword(req, res) {
 
 }
 
-module.exports = { resetPassword, forgotPassword };
+
+async function updatePassword(req,res) {
+  const {newPassword,newPasswordConfirm} = req.body;
+  
+  try {
+    // 1) Get user from collection
+    const user = await User.findById(req.user.id);
+
+    // 2) Check if POST current password is correct
+    if (!(await bcrypt.compare(req.body.currentPassword, user.password))) {
+      return res.status(401).json({ status: "fail", message: "Your current password is wrong." });
+    }
+
+    if(newPassword !== newPasswordConfirm){
+      return res.status(401).json({ status: "fail", message: "Password confirm not the same" });
+    }
+    
+    // 3) If so, update password
+    user.password = await bcrypt.hash(req.body.newPassword, 12);
+    user.passwordConfirm = await bcrypt.hash(req.body.newPasswordConfirm, 12);
+    user.passwordChangedAt = Date.now() - 1000;
+    await user.save();
+
+    // 4) Log user in, send JWT
+    const payload = { id: user._id, email: user.email, role: user.role };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1y" });
+
+    return res.status(200).json({
+      status: "success",
+      message: token
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ status: "error", message: error.message });
+  }
+ 
+}
+
+module.exports = { resetPassword, forgotPassword, updatePassword };
