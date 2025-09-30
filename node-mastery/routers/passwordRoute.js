@@ -6,7 +6,6 @@ const passwordController = require("../controllers/passwordController");
 router.post("/api/v1/forgot-password", passwordController.forgotPassword);
 
 // Route to  password reset (send reset email)
-router.post("/api/v1/reset-password", passwordController.resetPassword);
-
+router.patch("/api/v1/reset-password/:token", passwordController.resetPassword);
 
 module.exports = router;

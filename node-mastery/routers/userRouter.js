@@ -11,10 +11,10 @@ router.post("/api/v1/users",authMiddleware.tokenVerify,userController.createUser
 router.get("/api/v1/users",[authMiddleware.tokenVerify, authMiddleware.isAdmin],userController.getAllUsers);
 
 // routes to get single user
-router.get("/api/v1/users/:id",authMiddleware.tokenVerify,userController.getUser);
+router.get("/api/v1/users/:id",[authMiddleware.tokenVerify, authMiddleware.isAdmin],userController.getUser);
 
 // routes to update user
-router.put("/api/v1/users/:id",authMiddleware.tokenVerify,userController.updateUser);
+router.put("/api/v1/users/:id",[authMiddleware.tokenVerify, authMiddleware.isAdmin],userController.updateUser);
 
 // routes to delete user
 router.delete("/api/v1/users/:id",[authMiddleware.tokenVerify, authMiddleware.isAdmin],userController.deleteUser);
