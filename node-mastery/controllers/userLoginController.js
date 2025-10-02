@@ -27,7 +27,17 @@ async function login (req, res)  {
     
 
     // If you want to generate a JWT token upon successful login
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1y" });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_SECRET_EXPIRES_IN});
+
+    // Set token in HTTP-only cookie
+    const cookieOptions = {
+      secure: process.env.NODE_ENV === "production", // Set to true in production
+      sameSite: "Strict", // Helps prevent CSRF attacks
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 90), // 90 days
+      httpOnly: true,
+    };
+
+    res.cookie("token", token, cookieOptions);
 
     res.status(200).json({ message: "Login successful", token });
   } catch (error) {

@@ -72,7 +72,8 @@ async function forgotPassword(req, res) {
 async function resetPassword(req, res) {
   const { password, passwordConfirm } = req.body;
 
-  if(password !== passwordConfirm){
+  try {
+      if(password !== passwordConfirm){
     return res.status(400).json({ status: "fail", message: "Password and password confirm do not match" });
   }
 
@@ -108,13 +109,27 @@ async function resetPassword(req, res) {
   // 4)generate JWT token
   const payload = { id: user._id, email: user.email, role: user.role };
   // console.log("JWT payload:", payload);
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1y" });
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {  expiresIn: process.env.JWT_SECRET_EXPIRES_IN });
+
+  // Set token in HTTP-only cookie
+    const cookieOptions = {
+      secure: process.env.NODE_ENV === "production", // Set to true in production
+      sameSite: "Strict", // Helps prevent CSRF attacks
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 90), // 90 days
+      httpOnly: true,
+    };
+
+    res.cookie("token", token, cookieOptions);
 
   // 5) Log the user in, send JWT
   return res.status(200).json({
     status: "success",
-    message: token
+    message: "Password updated successfully"
   });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ status: "error", message: error.message });
+  }
 
 }
 
@@ -145,11 +160,21 @@ async function updatePassword(req,res) {
 
     // 4) Log user in, send JWT
     const payload = { id: user._id, email: user.email, role: user.role };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1y" });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_SECRET_EXPIRES_IN });
+
+    // Set token in HTTP-only cookie
+    const cookieOptions = {
+      secure: process.env.NODE_ENV === "production", // Set to true in production
+      sameSite: "Strict", // Helps prevent CSRF attacks
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 90), // 90 days
+      httpOnly: true,
+    };
+
+    res.cookie("token", token, cookieOptions);
 
     return res.status(200).json({
       status: "success",
-      message: token
+      message: "Password updated successfully"
     });
   } catch (error) {
     console.error(error);
