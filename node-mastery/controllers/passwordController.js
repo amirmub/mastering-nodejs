@@ -5,9 +5,15 @@ const sendEmail = require("../utils/email");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+// 1) User forgot password -> send email with reset link (with token)
 async function forgotPassword(req, res) {
+  const {email} = req.body;
+
+  if(!email){
+    return res.status(400).json({ status: "fail", message: "Please provide your email address" });
+  }
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: email });
 
     if (!user) {
       return res.status(404).json({ status: "fail", message: "User not found" });
@@ -15,7 +21,7 @@ async function forgotPassword(req, res) {
 
     // Generate raw reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
-    console.log("Reset token:", resetToken);
+    // console.log("Reset token:", resetToken);
 
     // Hash and store in DB
     user.passwordResetToken = crypto
@@ -62,10 +68,14 @@ async function forgotPassword(req, res) {
   }
 }
 
-
-
-
+// 2) User resets password using the token sent to their email
 async function resetPassword(req, res) {
+  const { password, passwordConfirm } = req.body;
+
+  if(password !== passwordConfirm){
+    return res.status(400).json({ status: "fail", message: "Password and password confirm do not match" });
+  }
+
   // 1) Get user based on the token
   const hashedToken = crypto
     .createHash("sha256")
@@ -85,8 +95,8 @@ async function resetPassword(req, res) {
     });
   }
 
-  user.password = await bcrypt.hash(req.body.password, 12);
-  user.passwordConfirm = await bcrypt.hash(req.body.passwordConfirm, 12);
+  user.password = await bcrypt.hash(password, 12);
+  user.passwordConfirm = await bcrypt.hash(passwordConfirm, 12);
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
 
@@ -109,15 +119,17 @@ async function resetPassword(req, res) {
 }
 
 
+
+// this function is for logged in user and update their password
 async function updatePassword(req,res) {
-  const {newPassword,newPasswordConfirm} = req.body;
+  const {currentPassword,newPassword,newPasswordConfirm} = req.body;
   
   try {
     // 1) Get user from collection
     const user = await User.findById(req.user.id);
 
     // 2) Check if POST current password is correct
-    if (!(await bcrypt.compare(req.body.currentPassword, user.password))) {
+    if (!(await bcrypt.compare(currentPassword, user.password))) {
       return res.status(401).json({ status: "fail", message: "Your current password is wrong." });
     }
 
@@ -126,8 +138,8 @@ async function updatePassword(req,res) {
     }
     
     // 3) If so, update password
-    user.password = await bcrypt.hash(req.body.newPassword, 12);
-    user.passwordConfirm = await bcrypt.hash(req.body.newPasswordConfirm, 12);
+    user.password = await bcrypt.hash(newPassword, 12);
+    user.passwordConfirm = await bcrypt.hash(newPasswordConfirm, 12);
     user.passwordChangedAt = Date.now() - 1000;
     await user.save();
 

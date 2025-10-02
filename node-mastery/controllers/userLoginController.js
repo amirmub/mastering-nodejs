@@ -23,7 +23,7 @@ async function login (req, res)  {
     }
 
     const payload = { id: user._id, email: user.email, role: user.role };
-    console.log(payload);
+    // console.log(payload);
     
 
     // If you want to generate a JWT token upon successful login

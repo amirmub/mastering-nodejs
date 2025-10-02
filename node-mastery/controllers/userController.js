@@ -65,7 +65,7 @@ async function getUser(req, res) {
 //  to update a User
 async function updateUser (req, res) {
     try {
-    const { name, email, photo, password, passwordConfirm } = req.body;
+    const { name, email, photo } = req.body;
     const user = await User.findById(req.params.id);
 
     if (!user) {
@@ -75,8 +75,6 @@ async function updateUser (req, res) {
     user.name = name || user.name;
     user.email = email || user.email;
     user.photo = photo || user.photo;
-    user.password = password || user.password;
-    user.passwordConfirm = passwordConfirm || user.passwordConfirm;
 
     await user.save();
     return res.status(200).json({ status : "success", msg: "User updated successfully" });
