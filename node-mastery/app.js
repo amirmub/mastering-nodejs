@@ -2,6 +2,10 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 
+// security headers 
+const helmet = require("helmet");
+app.use(helmet());
+
 // implement rate limiting to all requests
 const rateLimit = require("express-rate-limit");
 
