@@ -1,6 +1,14 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
+
+// Data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+// Data sanitization against XSS like HTML code injection
+app.use(xss());
 
 // security headers 
 const helmet = require("helmet");
