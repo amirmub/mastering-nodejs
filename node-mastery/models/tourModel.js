@@ -52,6 +52,7 @@ const tourSchema = new mongoose.Schema({
     required:[true, "imageCover must be included"],
   },
   images: [String],
+  // to get user details in guides array
   guides:[{
       type: mongoose.Schema.ObjectId,
       ref: "User",
