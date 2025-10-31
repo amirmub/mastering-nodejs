@@ -8,7 +8,7 @@ const tourSchema = new mongoose.Schema({
    },
   rating: {
     type: Number,
-    default: 3.5, 
+    default: 3.5,
   },
   price: {
     type: Number,
@@ -52,6 +52,10 @@ const tourSchema = new mongoose.Schema({
     required:[true, "imageCover must be included"],
   },
   images: [String],
+  guides:[{
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+  }],
   createdAt: {
     type: Date,
     default: Date.now()

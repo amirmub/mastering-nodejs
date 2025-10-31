@@ -2,20 +2,21 @@ const Tour = require("../models/tourModel");
 
 // to create a tour
 async function createTour(req,res) {
-    const {name, rating, price,discountPrice, duration, maxGroupSize, difficulty, description, imageCover, images, startDate} = req.body;
+    const {name, rating, price,discountPrice, duration, maxGroupSize, difficulty, description, imageCover, images, startDate, guides} = req.body;
 
     if (discountPrice > price) {
       return res.status(400).json({status : "fail", msg : "the price must be greatethan discountPrice"})
     }
 
    try {
-     const newTour = Tour.create({
-        name, rating, price,discountPrice, duration, maxGroupSize, difficulty, description, imageCover, images, startDate
+     const newTour = await Tour.create({
+        name, rating, price,discountPrice, duration, maxGroupSize, difficulty, description, imageCover, images, startDate,guides
     });
 
-    res.status(201).json({
+     res.status(201).json({
         status : "success",
-        msg : `successfully added`
+        msg : `successfully added`,
+        data: newTour
     });
 
    } catch (error) {
@@ -90,7 +91,7 @@ async function deleteTour(req, res) {
     }
 
     await tour.deleteOne();
-    return res.status(200).json({ status : "success", message: "tour deleted successfully" });
+    return res.status(200).json({ status : "success", message: "tour deleted successfully", data: null });
 
    } catch (error) {
     console.log(error);
