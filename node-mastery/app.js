@@ -34,7 +34,7 @@ dbConnection();
 
 // all routes
 const routes = require("./routers/index.js");
-app.use(routes);
+app.use("/api/v1",routes);
 
 app.listen(5000, (err) => {
   if (err) console.log(err);

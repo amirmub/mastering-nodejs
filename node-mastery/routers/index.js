@@ -13,4 +13,7 @@ router.use(userLogin);
 const passwordRoute = require('./passwordRoute');
 router.use(passwordRoute);
 
+const reviewRoute = require('./reviewRoute');
+router.use(reviewRoute);
+
 module.exports = router;
