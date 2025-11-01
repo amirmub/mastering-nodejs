@@ -1,14 +1,20 @@
 const express = require("express");
-const router = express();
-const tourController = require("../controllers/tourController")
+const router = express.Router();
+const tourController = require("../controllers/tourController");
+const reviewController = require("../controllers/reviewController");
+const authMiddleware = require("../middleware/authMiddleware");
 
-// routes to Create tours
-router.post("/tours",tourController.createTour);
+// Nested review route
+router.post("/tours/:tourId/reviews", authMiddleware.tokenVerify, reviewController.createReview);
+
+//  Create tour
+router.post("/tours", tourController.createTour);
 
 // routes to get all tours
 router.get("/tours",tourController.getAllTour);
 
 // routes to get single tour
+router.get("/tours/:id",tourController.getTour);
 
 // routes to update tour
 router.put("/tours/:id",tourController.updateTour);
@@ -17,4 +23,3 @@ router.put("/tours/:id",tourController.updateTour);
 router.delete("/tours/:id",tourController.deleteTour);
 
 module.exports = router
-router.get("/tours/:id",tourController.getTour);

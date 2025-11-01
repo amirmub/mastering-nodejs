@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express();
+const router = express.Router({mergeParams: true});// for merging or nested array
 const reviewController = require("../controllers/reviewController")
 const authMiddleware = require("../middleware/authMiddleware");
 
