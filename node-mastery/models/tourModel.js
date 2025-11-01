@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Review = require("./reviewModel");
 
 const tourSchema = new mongoose.Schema({
    name: {
@@ -62,8 +63,17 @@ const tourSchema = new mongoose.Schema({
     default: Date.now()
   },
   startDate: [Date]
+},
+{ toJSON: { virtuals: true }, toObject: { virtuals: true } }
+);
+
+// Virtual populate (no manual array storing required)
+tourSchema.virtual("review", {
+  ref: "Review",
+  foreignField: "tour",   // from Review model
+  localField: "_id"       // matches Tour _id
 });
 
-const Tour = mongoose.model("Tours", tourSchema);
+const Tour = mongoose.model("Tour", tourSchema);
 
 module.exports = Tour;

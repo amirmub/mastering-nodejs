@@ -43,7 +43,14 @@ async function getAllReview(req, res) {
 // to get a single tour
 async function getReview(req, res) {
   try { 
-    const review = await Review.findById(req.params.id).populate("user").populate("tour");
+    const review = await Review.findById(req.params.id).select("-__v -createdAt") // fields from the Tour model
+      .populate({
+        path: "user",
+        select: "-password -passwordConfirm -__v -createdAt" // fields from the User model
+      }).populate({
+        path: "tour",
+        select: "_id" // fields from the Review model
+      });
 
     if (!review) {
       return res.status(404).json({ status: "fail", message: "Invalid ID" });

@@ -15,14 +15,15 @@ const reviewSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    // normal populate or its not virtual populate
     user: {
         type: mongoose.Schema.ObjectId,
         ref: "User",
-        required: [true, "Review must belong to a tour"],
+        required: [true, "Review must belong to a user"],
     },
     tour: {
         type: mongoose.Schema.ObjectId,
-        ref: "Tours",
+        ref: "Tour",
         required: [true, "Review must belong to a tour"],
     },
 
