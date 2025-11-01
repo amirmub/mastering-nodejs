@@ -47,7 +47,11 @@ async function getAllTour(req, res) {
 // to get a single tour
 async function getTour(req, res) {
   try { 
-    const tour = await Tour.findById(req.params.id).populate("guides");//populate added to get user details in guides array
+    const tour = await Tour.findById(req.params.id).select("-__v -createdAt") // fields from the Tour model
+      .populate({
+        path: "guides",
+        select: "-password -passwordConfirm -__v -createdAt" // fields from the User model
+      });;//populate added to get user details in guides array
 
     if (!tour) {
       return res.status(404).json({ status: "fail", message: "Invalid ID" });
