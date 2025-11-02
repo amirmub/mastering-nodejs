@@ -43,4 +43,15 @@ function isAdmin(req, res, next) {
   }
 }
 
-module.exports = { tokenVerify, isAdmin };
+// Middleware to check if the user is an admin 
+function isManager(req, res, next) {
+  const role = req.role;  
+
+  if (role === 'manager') {
+    next();
+  } else {
+    return res.status(403).json({ msg: "Access denied: only for manager" });
+  }
+}
+
+module.exports = { tokenVerify, isAdmin, isManager };
