@@ -8,6 +8,13 @@ async function createUser(req, res) {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    if(role && !['user', 'admin', 'manager'].includes(role)) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid role specified"
+      });
+    }
+
     if(password !== passwordConfirm) {
       return res.status(400).json({
         status: "fail",

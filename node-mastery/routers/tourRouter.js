@@ -4,7 +4,7 @@ const tourController = require("../controllers/tourController");
 const reviewController = require("../controllers/reviewController");
 const authMiddleware = require("../middleware/authMiddleware");
 
-// Nested review route
+// Nested review route use middleware to get user information
 router.post("/tours/:tourId/reviews", authMiddleware.tokenVerify, reviewController.createReview);
 
 //  Create tour

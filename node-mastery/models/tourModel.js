@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Review = require("./reviewModel");
 
 const tourSchema = new mongoose.Schema({
    name: {
@@ -71,7 +70,7 @@ const tourSchema = new mongoose.Schema({
 tourSchema.virtual("review", {
   ref: "Review",
   foreignField: "tour",   // from Review model
-  localField: "_id"       // matches Tour _id
+  localField: "_id"      // matches Tour _id
 });
 
 const Tour = mongoose.model("Tour", tourSchema);
