@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    photo: String,
+    photo: { type: String },
     role: {
         type: String,
         enum: ['user', 'admin', 'manager'],

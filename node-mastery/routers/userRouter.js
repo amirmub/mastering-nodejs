@@ -1,14 +1,11 @@
 const express = require("express");
-const router = express();
-const multer = require('multer')
+const router = express.Router();
 const userController = require("../controllers/userController");
 
 const authMiddleware = require("../middleware/authMiddleware");
 
-const upload = multer({ dest: 'public/img' });
-
 // routes to create user
-router.post("/users",upload.single('photo'),userController.createUser);
+router.post("/users",userController.uploadUserPhoto,userController.createUser);
 
 // routes to get all users
 router.get("/users",[authMiddleware.tokenVerify, authMiddleware.isAdmin],userController.getAllUsers);

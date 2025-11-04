@@ -1,9 +1,14 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
+const multer = require('multer');
+
+const upload = multer({ dest: 'public/img' });
+const uploadUserPhoto =  upload.single('photo');
 
 // to create a user
 async function createUser(req, res) {
-  const { name, email, photo, password, passwordConfirm, role } = req.body;
+  const { name, email, password, passwordConfirm, role } = req.body;
+  const photo = req.file ? req.file.filename : "default.jpg";
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -108,4 +113,4 @@ async function deleteUser(req, res) {
    }
 };
 
-module.exports = { createUser, getAllUsers, getUser, updateUser, deleteUser };
+module.exports = { createUser, getAllUsers, getUser, updateUser, deleteUser, uploadUserPhoto };
