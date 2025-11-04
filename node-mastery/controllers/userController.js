@@ -24,7 +24,21 @@ const multerFilter = (req, file, cb) => {
 };
 
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
-const uploadUserPhoto = upload.single('photo');
+
+const uploadUserPhoto = (req, res, next) => {
+  const uploadSingle = upload.single('photo');
+
+  uploadSingle(req, res, (err) => {
+    if (err) {
+      // If Multer error, respond in JSON
+      return res.status(400).json({
+        status: "fail",
+        message: err.message // "Not an image! Please upload an image."
+      });
+    }
+    next();
+  });
+};
 
 // Helper to delete uploaded file
 function deleteUploadedFile(file) {
@@ -41,8 +55,8 @@ async function createUser(req, res) {
   const { name, email, password, passwordConfirm, role } = req.body;
   const photo = req.file ? req.file.filename : "default.jpg";
 
-  console.log("req.file:", req.file);
-  console.log("req.body:", req.body);
+  // console.log("req.file:", req.file);
+  // console.log("req.body:", req.body);
 
   try {
     // 1. Check if email already exists
