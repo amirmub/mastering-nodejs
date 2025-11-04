@@ -1,45 +1,103 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const multer = require('multer');
+const fs = require("fs");
+const path = require("path");
 
-const upload = multer({ dest: 'public/img' });
-const uploadUserPhoto =  upload.single('photo');
+// Multer setup
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/img');
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split('/')[1];
+    cb(null, `user-${Date.now()}.${ext}`);
+  }
+});
 
-// to create a user
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Not an image! Please upload an image.'), false);
+  }
+};
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+const uploadUserPhoto = upload.single('photo');
+
+// Helper to delete uploaded file
+function deleteUploadedFile(file) {
+  if (!file) return;
+  const filePath = path.join(__dirname, "..", "public", "img", file.filename);
+  fs.unlink(filePath, (err) => {
+    if (err) console.error("Error deleting file:", err);
+    else console.log("Uploaded file deleted:", file.filename);
+  });
+}
+
+// Create User Controller
 async function createUser(req, res) {
   const { name, email, password, passwordConfirm, role } = req.body;
   const photo = req.file ? req.file.filename : "default.jpg";
 
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+  console.log("req.file:", req.file);
+  console.log("req.body:", req.body);
 
-    if(role && !['user', 'admin', 'manager'].includes(role)) {
+  try {
+    // 1. Check if email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      deleteUploadedFile(req.file);
+      return res.status(400).json({
+        status: "fail",
+        message: "Email already exists. Please use another one."
+      });
+    }
+
+    // 2. Check if role is valid
+    if (role && !['user', 'admin', 'manager'].includes(role)) {
+      deleteUploadedFile(req.file);
       return res.status(400).json({
         status: "fail",
         message: "Invalid role specified"
       });
     }
 
-    if(password !== passwordConfirm) {
+    // 3. Check password confirm  
+    if (password !== passwordConfirm) {
+      deleteUploadedFile(req.file);
       return res.status(400).json({
         status: "fail",
-        message: "Password confirm do not match"
+        message: "Password confirm does not match"
       });
     }
 
-    const user = await User.create({ name, email, role, photo, password: hashedPassword, passwordConfirm: hashedPassword });
+    // 4. Hash password  
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 5. Create user
+    const user = await User.create({
+      name,
+      email,
+      role,
+      photo,
+      password: hashedPassword,
+      passwordConfirm: hashedPassword
+    });
 
     res.status(201).json({
       status: "success",
       data: { user }
     });
-    
-  } catch (error) {
-    res.status(400).json({
-    status: "fail",
-    message: `Duplicate entry for email: ${error.keyValue.email}`
-  });
 
+  } catch (error) {
+    // If error occurs after upload, remove uploaded photo
+    deleteUploadedFile(req.file);
+    res.status(400).json({
+      status: "fail",
+      message: error.message
+    });
   }
 }
 
