@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcrypt");
+// below this multer code is for file upload
 const multer = require('multer');
 const fs = require("fs");
 const path = require("path");
